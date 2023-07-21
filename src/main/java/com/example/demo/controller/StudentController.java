@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.config.JwtUtil;
 import com.example.demo.entity.Student;
+import com.example.demo.exception.StudentNotFoundException;
 import com.example.demo.payload.AuthenticationRequest;
 import com.example.demo.payload.AuthenticationResponse;
 import com.example.demo.service.StudentService;
@@ -35,9 +36,12 @@ public class StudentController {
 
     @Autowired
     private JwtUtil jwtUtil;
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<List<Student>> getAllStudents(){
         List <Student> result = studentService.getAllStudents();
+        if(result.isEmpty()){
+            throw new StudentNotFoundException();
+        }
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
@@ -57,6 +61,9 @@ public class StudentController {
     @GetMapping("{id}")
     public ResponseEntity<Optional<Student>> getStudentById(@PathVariable("id") Long studentId){
         Optional<Student> result = studentService.getStudentById(studentId);
+        if(!result.isPresent()){
+            throw new StudentNotFoundException();
+        }
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
